@@ -12,10 +12,13 @@ load_dotenv()
 
 app = FastAPI(title="AI Security Report Assistant")
 
+# Get allowed origins from environment or use localhost for development
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:8080").split(",")
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,8 +27,8 @@ app.add_middleware(
 # Mount static files for frontend
 app.mount("/static", StaticFiles(directory="frontend", html=True), name="static")
 
-# Initialize OpenAI client
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Get OpenAI API key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 class VulnerabilityInput(BaseModel):
@@ -60,7 +63,7 @@ async def process_vulnerability(input_data: VulnerabilityInput):
     if not input_data.vulnerability_text.strip():
         raise HTTPException(status_code=400, detail="Vulnerability text cannot be empty")
     
-    if not openai.api_key:
+    if not OPENAI_API_KEY:
         raise HTTPException(
             status_code=500, 
             detail="OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
@@ -87,7 +90,7 @@ Provide your response in the following JSON format:
 """
 
         # Call OpenAI API
-        client = openai.OpenAI(api_key=openai.api_key)
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[

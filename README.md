@@ -146,9 +146,12 @@ Once the server is running, visit:
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `OPENAI_API_KEY` | Your OpenAI API key | Yes |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `OPENAI_API_KEY` | Your OpenAI API key | Yes | - |
+| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | No | `http://localhost:8000,http://localhost:8080` |
+
+**Note:** For production deployments, set `ALLOWED_ORIGINS` to your actual domain(s) to enhance security.
 
 ## 🧪 Example Vulnerability Inputs
 
@@ -201,7 +204,9 @@ uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 - API keys are stored in environment variables, not in code
 - Input validation prevents empty submissions
 - Error messages don't expose sensitive information
-- CORS is configured (should be restricted in production)
+- CORS origins can be configured via environment variables for production
+- Default CORS settings use localhost only (safe for development)
+- httpx version pinned for compatibility and security
 
 ## 📦 Dependencies
 
