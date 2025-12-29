@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Security Report Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #667eea;
+            font-size: 1rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .results {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-title {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .severity-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .severity-critical {
+            background: #d6293e;
+            color: white;
+        }
+
+        .result-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .remediation-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .remediation-steps li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            color: #333;
+        }
+
+        .remediation-steps li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .error {
+            display: none;
+            padding: 15px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            color: #721c24;
+            margin-bottom: 20px;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 AI Security Report Assistant</h1>
+        <p class="subtitle">Enter vulnerability findings below to get AI-powered risk analysis and remediation guidance</p>
+
+        <div class="error" id="errorMessage"></div>
+
+        <div class="form-section">
+            <label for="vulnerabilityInput">Vulnerability Finding:</label>
+            <textarea 
+                id="vulnerabilityInput" 
+                placeholder="Enter the vulnerability details here... (e.g., SQL Injection in login form, Exposed API keys, Cross-site scripting vulnerability, etc.)"
+            ></textarea>
+        </div>
+
+        <div class="button-container">
+            <button id="analyzeButton" onclick="analyzeVulnerability()">
+                Analyze Vulnerability
+            </button>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <p>🔄 Analyzing vulnerability with AI... Please wait.</p>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-section">
+                <div class="result-title">
+                    <span class="icon">📋</span>
+                    Risk Summary
+                </div>
+                <div class="result-content" id="riskSummary"></div>
+            </div>
+
+            <div class="result-section">
+                <div class="result-title">
+                    <span class="icon">⚠️</span>
+                    Severity Level
+                </div>
+                <div class="result-content">
+                    <span class="severity-badge" id="severityBadge"></span>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div class="result-title">
+                    <span class="icon">🛠️</span>
+                    Remediation Steps
+                </div>
+                <ul class="remediation-steps" id="remediationSteps"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeVulnerability() {
+            const input = document.getElementById('vulnerabilityInput').value.trim();
+            const button = document.getElementById('analyzeButton');
+            const loading = document.getElementById('loadingIndicator');
+            const results = document.getElementById('results');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Reset states
+            errorMessage.classList.remove('active');
+            results.classList.remove('active');
+
+            // Validate input
+            if (!input) {
+                showError('Please enter vulnerability details before analyzing.');
+                return;
+            }
+
+            // Show loading state
+            button.disabled = true;
+            loading.classList.add('active');
+
+            try {
+                // Call backend API
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vulnerability_text: input
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to analyze vulnerability');
+                }
+
+                const data = await response.json();
+
+                // Display results
+                displayResults(data);
+
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            } finally {
+                // Reset loading state
+                button.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayResults(data) {
+            // Show results container
+            const results = document.getElementById('results');
+            results.classList.add('active');
+
+            // Update risk summary
+            document.getElementById('riskSummary').textContent = data.risk_summary;
+
+            // Update severity badge
+            const severityBadge = document.getElementById('severityBadge');
+            const severity = data.severity.toLowerCase();
+            severityBadge.textContent = data.severity;
+            severityBadge.className = `severity-badge severity-${severity}`;
+
+            // Update remediation steps
+            const stepsList = document.getElementById('remediationSteps');
+            stepsList.innerHTML = '';
+            data.remediation_steps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                stepsList.appendChild(li);
+            });
+
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+        }
+
+        // Allow Enter key with Ctrl/Cmd to submit
+        document.getElementById('vulnerabilityInput').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                analyzeVulnerability();
+            }
+        });
+    </script>
+</body>
+</html>
