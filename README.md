@@ -2,6 +2,21 @@
 
 An intelligent security analysis tool that leverages AI to analyze vulnerability findings and generate actionable security reports. The application provides risk summaries, severity assessments, and detailed remediation steps for identified security vulnerabilities.
 
+## 🤖 GitHub Copilot: How I Used It (and What I Did)
+
+This project was built with **GitHub Copilot as an AI pair programmer**.
+
+**My role:**
+- Designed the application workflow (FastAPI backend + web UI)
+- Defined the security-report output format (risk summary, severity, remediation)
+- Implemented environment-based secret handling (`OPENAI_API_KEY`) and CORS controls
+- Validated and tested Copilot-generated code, fixing errors and improving reliability
+
+**Copilot helped with:**
+- Boilerplate FastAPI endpoint structure and request/response models
+- Frontend UI wiring (HTML/CSS/JS) to call the API
+- Drafting helper functions and improving code readability
+
 ## ✨ Features
 
 - **AI-Powered Analysis**: Uses OpenAI's GPT models to analyze security vulnerabilities
