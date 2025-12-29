@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-import openai
+import google.generativeai as genai
 import os
 import json
 from dotenv import load_dotenv
@@ -27,8 +27,12 @@ app.add_middleware(
 # Mount static files for frontend
 app.mount("/static", StaticFiles(directory="frontend", html=True), name="static")
 
-# Get OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Get Gemini API key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Configure Gemini
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 
 class VulnerabilityInput(BaseModel):
@@ -52,7 +56,7 @@ async def root():
 @app.post("/process", response_model=AnalysisResult)
 async def process_vulnerability(input_data: VulnerabilityInput):
     """
-    Process vulnerability finding and return AI-generated analysis.
+    Process vulnerability finding and return AI-generated analysis using Google Gemini.
     
     Args:
         input_data: VulnerabilityInput containing the vulnerability text
@@ -63,14 +67,14 @@ async def process_vulnerability(input_data: VulnerabilityInput):
     if not input_data.vulnerability_text.strip():
         raise HTTPException(status_code=400, detail="Vulnerability text cannot be empty")
     
-    if not OPENAI_API_KEY:
+    if not GEMINI_API_KEY:
         raise HTTPException(
             status_code=500, 
-            detail="OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
+            detail="Gemini API key not configured. Please set GEMINI_API_KEY environment variable."
         )
     
     try:
-        # Create prompt for OpenAI
+        # Create prompt for Gemini
         prompt = f"""You are a cybersecurity expert analyzing vulnerability findings. 
 Analyze the following vulnerability finding and provide:
 
@@ -89,20 +93,23 @@ Provide your response in the following JSON format:
 }}
 """
 
-        # Call OpenAI API
-        client = openai.OpenAI(api_key=OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a cybersecurity expert. Always respond with valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
+        # Initialize Gemini model (using Gemini 1.5 Flash for optimal performance)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Configure generation parameters
+        generation_config = genai.GenerationConfig(
             temperature=0.7,
-            max_tokens=500
+            max_output_tokens=800,
         )
         
-        # Extract and parse response
-        response_text = response.choices[0].message.content.strip()
+        # Generate response
+        response = model.generate_content(
+            prompt,
+            generation_config=generation_config
+        )
+        
+        # Extract response text
+        response_text = response.text.strip()
         
         # Remove markdown code blocks if present
         if response_text.startswith("```json"):

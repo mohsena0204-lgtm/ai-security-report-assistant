@@ -1,10 +1,10 @@
 # 🔒 AI Security Report Assistant
 
-An intelligent security analysis tool that leverages AI to analyze vulnerability findings and generate actionable security reports. The application provides risk summaries, severity assessments, and detailed remediation steps for identified security vulnerabilities.
+An intelligent security analysis tool that leverages Google Gemini AI to analyze vulnerability findings and generate actionable security reports. The application provides risk summaries, severity assessments, and detailed remediation steps for identified security vulnerabilities.
 
 ## ✨ Features
 
-- **AI-Powered Analysis**: Uses OpenAI's GPT models to analyze security vulnerabilities
+- **AI-Powered Analysis**: Uses Google Gemini 1.5 Flash model to analyze security vulnerabilities
 - **Risk Assessment**: Generates concise risk summaries for each finding
 - **Severity Classification**: Automatically assigns severity levels (Low, Medium, High, Critical)
 - **Remediation Guidance**: Provides specific, actionable remediation steps
@@ -15,7 +15,7 @@ An intelligent security analysis tool that leverages AI to analyze vulnerability
 
 ### Backend
 - **Framework**: FastAPI (Python)
-- **AI Integration**: OpenAI API (GPT-3.5-turbo)
+- **AI Integration**: Google Gemini API (Gemini 1.5 Flash)
 - **API Endpoint**: `/process` - Accepts vulnerability text and returns AI-generated analysis
 
 ### Frontend
@@ -44,7 +44,7 @@ ai-security-report-assistant/
 ### Prerequisites
 
 - Python 3.8 or higher
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
 
 ### Installation
 
@@ -75,8 +75,8 @@ ai-security-report-assistant/
    # Copy the example environment file
    cp .env.example .env
    
-   # Edit .env and add your OpenAI API key
-   # OPENAI_API_KEY=your_actual_api_key_here
+   # Edit .env and add your Google Gemini API key
+   # GEMINI_API_KEY=your_actual_api_key_here
    ```
 
 ### Running the Application
@@ -148,7 +148,7 @@ Once the server is running, visit:
 
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
-| `OPENAI_API_KEY` | Your OpenAI API key | Yes | - |
+| `GEMINI_API_KEY` | Your Google Gemini API key | Yes | - |
 | `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | No | `http://localhost:8000,http://localhost:8080` |
 
 **Note:** For production deployments, set `ALLOWED_ORIGINS` to your actual domain(s) to enhance security.
@@ -189,7 +189,7 @@ uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 - CORS middleware configuration
 - Static file serving for frontend
 - `/process` endpoint implementation
-- OpenAI API integration
+- Google Gemini API integration
 - Error handling and validation
 
 **Frontend (frontend/index.html)**
@@ -212,7 +212,7 @@ uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 
 - **fastapi**: Modern web framework for building APIs
 - **uvicorn**: ASGI server for running FastAPI
-- **openai**: Official OpenAI Python client
+- **google-generativeai**: Official Google Gemini Python client
 - **python-dotenv**: Environment variable management
 - **pydantic**: Data validation using Python type annotations
 
@@ -226,6 +226,6 @@ This project is open source and available for educational purposes.
 
 ## 🙏 Acknowledgments
 
-- OpenAI for providing the GPT API
+- Google for providing the Gemini API
 - FastAPI for the excellent web framework
 - The security community for vulnerability classification standards
