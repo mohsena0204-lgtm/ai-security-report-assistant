@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import openai
 import os
+import json
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -98,7 +99,6 @@ Provide your response in the following JSON format:
         )
         
         # Extract and parse response
-        import json
         response_text = response.choices[0].message.content.strip()
         
         # Remove markdown code blocks if present
